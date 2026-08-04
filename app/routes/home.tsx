@@ -1,10 +1,7 @@
 import { ArrowRight, ArrowUp, ArrowUpRight, Clock, Layers } from "lucide-react";
-import { useState } from "react";
 import Navbar from "../../components/ui/Navbar";
 import type { Route } from "./+types/home";
 import { Button } from "../../components/ui/Button";
-import Upload from "../../components/Upload";
-import { useNavigate } from "react-router";
 
 
 export function meta({ }: Route.MetaArgs) {
@@ -15,16 +12,6 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const [uploadedDesign, setUploadedDesign] = useState<string | null>(null);
-  const navigate = useNavigate()
-
-  const handleUploadComplete = async (base64: string) => {
-    const newId = Date.now().toString(); // Generate a unique ID based on the current timestamp
-    navigate(`/visualizer/${newId}`);
-
-    return true;
-  }
-
   return (
     <div className="home">
       <Navbar />
@@ -61,7 +48,7 @@ export default function Home() {
               <p>Upload your floor design and let Roomtify do the rest. Our AI will generate a stunning 3D model of your space in seconds.</p>
             </div>
 
-            <Upload onComplete={handleUploadComplete} />
+            <p>Upload image</p>
           </div>
         </div>
       </section>
