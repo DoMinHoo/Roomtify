@@ -7,12 +7,12 @@ import { Button } from "../../components/ui/Button";
 const visualizerId = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { initialImage, initialRender, name } = location.state || {};
+    const { initialImage, initialRendered, name = "Untitled Project" } = location.state || {};
 
     const hasInitialGenerated = useRef(false)
 
     const [isProcessing, setIsProcessing] = useState(false);
-    const [currentImage, setCurrentImage] = useState<string | null>(initialRender || null);
+    const [currentImage, setCurrentImage] = useState<string | null>(initialRendered || null);
 
     const handleBack = () => navigate('/')
 
@@ -36,14 +36,14 @@ const visualizerId = () => {
     useEffect(() => {
         if (!initialImage || hasInitialGenerated.current) return;
 
-        if (initialRender) {
-            setCurrentImage(initialRender);
+        if (initialRendered) {
+            setCurrentImage(initialRendered);
             hasInitialGenerated.current = true;
             return;
         }
         hasInitialGenerated.current = true;
         runGeneration();
-    }, [initialImage, initialRender])
+    }, [initialImage, initialRendered])
 
     return (
         <section>
