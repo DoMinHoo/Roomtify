@@ -1,4 +1,16 @@
-export const PUTER_WORKER_URL = import.meta.env.VITE_PUTER_WORKER_URL || "";
+const normalizeWorkerUrl = (url: string) => {
+    return url
+        .trim()
+        .replace(/[;]+$/, "")
+        .replace(/\/+$/, "");
+};
+
+const rawPuterWorkerUrl = import.meta.env.VITE_PUTER_WORKER_URL || "";
+export const PUTER_WORKER_URL = normalizeWorkerUrl(rawPuterWorkerUrl);
+
+if (rawPuterWorkerUrl && rawPuterWorkerUrl !== PUTER_WORKER_URL) {
+    console.warn('Normalized VITE_PUTER_WORKER_URL from', rawPuterWorkerUrl, 'to', PUTER_WORKER_URL);
+}
 
 // Storage Paths
 export const STORAGE_PATHS = {
