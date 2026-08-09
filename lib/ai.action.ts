@@ -40,20 +40,28 @@ export const generate3DView = async ({ sourceImage }: Generate3DViewParams) => {
 
     if (!base64Data || !mimeType) throw new Error('Failed to generate 3D view');
 
-    const response = await puter.ai.txt2img(ROOMIFY_RENDER_PROMPT, {
-        provider: "gemini",
-        model: "gemini-2.5-flash-image-preview",
-        input_image: base64Data,
-        input_image_mime_type: mimeType,
-        ratio: { w: 1024, h: 1024 },
-    });
+    let response;
+
+    try {
+        response = await puter.ai.txt2img(ROOMIFY_RENDER_PROMPT, {
+            provider: "gemini",
+            model: "gemini-2.5-flash-image-preview",
+            input_image: base64Data,
+            input_image_mime_type: mimeType,
+            ratio: { w: 1024, h: 1024 },
+        });
+    } catch (error) {
+        const err = error as any;
+        const message = err?.message || err?.error || JSON.stringify(err) || 'Failed to generate 3D view';
+        throw new Error(message);
+    }
 
     const rawImageUrl = (response as HTMLImageElement).src ?? null;
 
-    if (!rawImageUrl) return { renderdImage: null, renderedPath: null };
+    if (!rawImageUrl) return { renderedImage: null, renderedPath: null };
 
     const renderedImage = rawImageUrl.startsWith('data')
-        ? rawImageUrl : await fetchAsDataUrl(rawImageUrl);;
+        ? rawImageUrl : await fetchAsDataUrl(rawImageUrl);
 
     return { renderedImage, renderedPath: undefined };
 }
