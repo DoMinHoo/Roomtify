@@ -129,8 +129,6 @@ export const getProjectById = async ({ id }: { id: string }) => {
             project?: DesignItem | null;
         };
 
-        console.log("Fetched project data:", data);
-
         return data?.project ?? null;
     } catch (error) {
         console.error("Failed to fetch project:", error);

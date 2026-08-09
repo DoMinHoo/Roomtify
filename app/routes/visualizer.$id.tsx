@@ -4,6 +4,7 @@ import { generate3DView } from "../../lib/ai.action";
 import { Box, Download, RefreshCcw, Share2, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import { createProject, getProjectById } from "../../lib/putter.action";
+import { ReactCompareSlider, ReactCompareSliderImage } from "react-compare-slider";
 
 const visualizerId = () => {
     const { id } = useParams();
@@ -21,6 +22,19 @@ const visualizerId = () => {
     const [currentImage, setCurrentImage] = useState<string | null>(null);
 
     const handleBack = () => navigate('/')
+
+    const handleExport = () => {
+        if (!currentImage) return;
+
+        const fileName = `${project?.name?.replace(/[^a-z0-9_-]+/gi, '_') || `render_${id}`}.png`;
+        const anchor = document.createElement('a');
+        anchor.href = currentImage;
+        anchor.download = fileName;
+        anchor.style.display = 'none';
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+    };
 
     const [generationError, setGenerationError] = useState<string | null>(null);
 
@@ -46,10 +60,12 @@ const visualizerId = () => {
 
                 const saved = await createProject({ item: updateItem, visibility: "private" })
 
-                if (saved) {
-                    setProject(saved);
-                    setCurrentImage(saved.renderedImage || result.renderedImage);
+                if (!saved) {
+                    throw new Error("Failed to persist generated project");
                 }
+
+                setProject(saved);
+                setCurrentImage(saved.renderedImage || result.renderedImage);
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
@@ -127,7 +143,7 @@ const visualizerId = () => {
 
                             <div className="panel-action">
                                 <Button size="sm"
-                                    onClick={() => { }}
+                                    onClick={handleExport}
                                     className="export"
                                     disabled={!currentImage}>
                                     <Download className="w-4 h-4 me-2" />Export
@@ -167,6 +183,35 @@ const visualizerId = () => {
                         </div>
                     </div>
 
+                    <div className="paner-compare">
+                        <div className="paner-header">
+                            <div className="paner-meta">
+                                <p>Compare</p>
+                                <h3>Before and After</h3>
+                            </div>
+                            <div className="hint">Drag to compare</div>
+                        </div>
+                        <div className="compare-stage">
+                            {project?.sourceImage && currentImage ? (
+                                <ReactCompareSlider
+                                    defaultValue={50}
+                                    style={{ width: '100%', height: 'auto' }}
+                                    itemOne={
+                                        <ReactCompareSliderImage src={project?.sourceImage} alt="Before" className="compare-img" />
+                                    }
+                                    itemTwo={
+                                        <ReactCompareSliderImage src={currentImage || project?.renderedImage || undefined} alt="After" className="compare-img" />
+                                    }
+                                />
+                            ) : (
+                                <div className="paner-fallback">
+                                    {project?.sourceImage && (
+                                        <img src={project.sourceImage} alt="Before" className="compare-img" />
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </section>
             </div >
         </section >
