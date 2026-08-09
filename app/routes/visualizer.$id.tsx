@@ -46,10 +46,12 @@ const visualizerId = () => {
 
                 const saved = await createProject({ item: updateItem, visibility: "private" })
 
-                if (saved) {
-                    setProject(saved);
-                    setCurrentImage(saved.renderedImage || result.renderedImage);
+                if (!saved) {
+                    throw new Error("Failed to persist generated project");
                 }
+
+                setProject(saved);
+                setCurrentImage(saved.renderedImage || result.renderedImage);
             }
         } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
